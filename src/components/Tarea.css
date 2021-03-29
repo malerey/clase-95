@@ -1,3 +1,7 @@
 .completada {
   text-decoration: line-through;
 }
+
+.deshabilitado {
+  border: none
+}

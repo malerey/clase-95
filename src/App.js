@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import Tarea from './components/Tarea';
+import Alumna from './components/Alumna'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons'
 
 const App = () => {
+  const [mostrarError, setMostrarError] = useState(false)
   const [valorDelInput, setValorDelInput] = useState('');
   const [lista, setLista] = useState([
     'Lavar ropa',
@@ -15,14 +17,36 @@ const App = () => {
     'Putear a d1sn3y mientras mando CVs a otras empresas',
   ])
 
+// como borro un elemento en especifico de la lista? --> splice, filter
+// XX como hago para saber que elemento quiero borrar? --> con el indice o con el elemento en si 
+// XX como hago para que esa informacion llegue a la funcion? --> parametro 
 
-  const borrarElementoDelArray = (param) => {
+const modificarElementoDelArray = (valorNuevo, indice) => {
+  console.log("estas tratando de modificar", valorNuevo, indice)
+
+  const nuevaLista =  [...lista]
+  nuevaLista.splice(indice, 1, valorNuevo)
+  console.log(nuevaLista)
+  setLista(nuevaLista)
+  // esta funcion necesito que se ejecute cuando se hace click en el botojn que esta en Tarea.js
+}
+
+  const borrarElementoDelArray = (tarea) => {
     // aqui borramos un elemento del array
-    console.log("estoy en la funcion borrar elemento del array y el parametro que me mandaron es", param)
+
+    // si uso splice, voy a crear un array nuevo eliminando el elemento que ya no quiero
+    // en el caso de filter, voy a crear un array nuevo con todos los elementos que NO sean el que quiero borrar
+
+    // filter hace un nuevo array a partir de los elementos que pasen una condicion 
+    setLista([...lista].filter(elemento => elemento !== tarea))
   }
 
   const handleClick = () => {
-    setLista([ ...lista, valorDelInput ]) // a fuego guardarse esto
+    if (valorDelInput === "") {
+      setMostrarError(true)
+    }
+
+    valorDelInput && setLista([ ...lista, valorDelInput ]) // a fuego guardarse esto
     setValorDelInput("")
   };
 
@@ -39,17 +63,20 @@ const App = () => {
 
   return (
     <div>
+
     {/* <FontAwesomeIcon icon={faStar} /> */}
 
-      <ul>
+      <ol>
         {lista.map((tarea, i) => (
           <Tarea 
             key={i} 
+            indice={i}
             tarea={tarea} 
             borrarElementoDelArray={borrarElementoDelArray}
+            modificarElementoDelArray={modificarElementoDelArray}
             />
         ))}
-      </ul>
+      </ol>
 
       <label>
         Agregar tarea...
@@ -60,6 +87,11 @@ const App = () => {
           placeholder="Por ej, putear a Pepo"
         />
       </label>
+     
+     {mostrarError &&
+      <h2>No podes agregar una tarea vacia</h2>
+      }
+
       <button onClick={handleClick}>Agregar tarea</button>
     </div>
   );
